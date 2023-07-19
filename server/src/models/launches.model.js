@@ -5,18 +5,18 @@ const planets = require("./planets.mongo");
 
 const DEFAULT_FLIGHT_NUMBER = 100;
 
-const launch = {
-  flightNumber: 100, //flight_number
-  mission: "Kepler Exploration X", //name
-  rocket: "Explorer IS1", //rocket.name
-  launchDate: new Date("December 27, 2030"), //date_local
-  target: "Kepler-442 b", //not applicable
-  customers: ["ZTM", "NASA"], //payload.customers for each payload
-  upcoming: true, //upcoming
-  success: true, //success
-};
+// const launch = {
+//   flightNumber: 100, //flight_number
+//   mission: "Kepler Exploration X", //name
+//   rocket: "Explorer IS1", //rocket.name
+//   launchDate: new Date("December 27, 2030"), //date_local
+//   target: "Kepler-442 b", //not applicable
+//   customers: ["ZTM", "NASA"], //payload.customers for each payload
+//   upcoming: true, //upcoming
+//   success: true, //success
+// };
 
-saveLaunch(launch);
+// saveLaunch(launch);
 
 const SPACEX_API_URL = "https://api.spacexdata.com/v4/launches/query";
 
@@ -43,6 +43,11 @@ async function populateLaunches() {
     },
   });
 
+  if (response.status !== 200) {
+    console.error("Problem with downloading SpaceX api");
+    throw new Error("Downloading launch data failed!");
+  }
+
   const launchDocs = response.data.docs;
   for (const launchDoc of launchDocs) {
     const payloads = launchDoc["payloads"];
@@ -61,8 +66,7 @@ async function populateLaunches() {
     };
 
     console.log(`${launch.flightNumber} ${launch.mission}`);
-
-    //TODO: populate launches collection...
+    await saveLaunch(launch);
   }
 }
 
@@ -99,19 +103,11 @@ async function getLatestFlightNumber() {
   return latestLaunch.flightNumber;
 }
 
-async function getAllLaunches() {
-  return await launchesDatabase.find({}, { _id: 0, __v: 0 });
+async function getAllLaunches(limit,  skip) {
+  return await launchesDatabase.find({}, { _id: 0, __v: 0 }).sort({ flightNumber: 1 }).skip(skip).limit(limit);
 }
 
 async function saveLaunch(launch) {
-  const planet = await planets.findOne({
-    keplerName: launch.target,
-  });
-
-  if (!planet) {
-    throw new Error("No matching planet found");
-  }
-
   await launchesDatabase.findOneAndUpdate(
     {
       flightNumber: launch.flightNumber,
@@ -122,6 +118,16 @@ async function saveLaunch(launch) {
     }
   );
 }
+
+// const checkPlanet = async () => {
+//   const planet = await planets.findOne({
+//     keplerName: launch.target,
+//   });
+
+//   if (!planet) {
+//     throw new Error("No matching planet found");
+//   }
+// };
 
 async function scheduleNewLaunch(launch) {
   const newFlightNumber = (await getLatestFlightNumber()) + 1;
@@ -147,7 +153,7 @@ async function abortLaunchById(launchId) {
     }
   );
 
-  return aborted.ok === 1 && aborted.nModified === 1;
+  return aborted.acknowledged === 1 && aborted.nModified === 1;
 }
 
 module.exports = {
