@@ -16,6 +16,12 @@ async function mongoConnect() {
   mongoose.connect(process.env.MONGO_URL, { useNewUrlParser: true });
 }
 
+const mongoDisconnect = async()=>{
+  mongoose.disconnect()
+}
+
+
 module.exports = {
   mongoConnect,
+  mongoDisconnect
 }
