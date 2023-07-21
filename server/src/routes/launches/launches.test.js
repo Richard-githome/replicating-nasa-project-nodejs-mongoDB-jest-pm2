@@ -9,6 +9,9 @@ describe("Launches API", () => {
     await loadPlanetsData();
   });
 
+  afterAll(async ()=>{
+    await mongoDisconnect()
+  })
 
   describe("Test GET /launches", () => {
     const limit = 5;
