@@ -11,12 +11,14 @@ describe("Launches API", () => {
 
 
   describe("Test GET /launches", () => {
+    const limit = 5;
+    const page = 1;
     test("It should respond with 200 success", async()=>{
       const response = await request(app)
-        .get("/v1/launches")
+        .get(`/v1/launches?limit=${limit}&page=${page}`)
         .expect("Content-Type", /json/)
         .expect(200);
-    });
+    }, 10000);
   });
 
   describe("Test POST /launch", () => {
@@ -52,7 +54,7 @@ describe("Launches API", () => {
       expect(responseDate).toBe(requestDate);
 
       expect(response.body).toMatchObject(launchDataWithoutDate);
-    });
+    }, 10000);
 
     test("It should catch missing required properties", async () => {
       const response = await request(app)

@@ -11,13 +11,18 @@ const PORT = process.env.PORT;
 const server = http.createServer(app);
 
 async function startServer() {
-  await mongoConnect();
-  await loadPlanetsData();
-  await loadLaunchData();
+  try {
+    await mongoConnect();
+    await loadPlanetsData();
+    await loadLaunchData();
+    
+    server.listen(PORT, () => {
+      console.log(`Server is running on ${PORT}`);
+    });
   
-  server.listen(PORT, () => {
-    console.log(`Server is running on ${PORT}`);
-  });
+  } catch (error) {
+    console.error(error)
+  }
 }
 
 startServer();

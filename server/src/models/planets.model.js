@@ -16,7 +16,7 @@ function livePLanet(planet) {
 
 const loadPlanetsData = async () => {
   try {
-    const result = await fs
+    return result = await fs
       .createReadStream(
         path.join(__dirname, "..", "..", "data", "kepler_data.csv")
       )
@@ -33,7 +33,7 @@ const loadPlanetsData = async () => {
         const countPlanetsFound = (await getAllPlanets()).length;
         console.log(`${countPlanetsFound} habitable planets found!`);
       });
-    return result;
+    // return result;
   } catch (error) {
     console.log(`${error.message}`);
   }
@@ -43,8 +43,8 @@ async function getAllPlanets() {
   return await planets.find(
     {},
     {
-      _id: 0,
-      __v: 0,
+      '_id': 0,
+      '__v': 0,
     }
   );
 }

@@ -13,7 +13,7 @@ mongoose.connection.on('error', (err) => {
 });
 
 async function mongoConnect() {
-  mongoose.connect(process.env.MONGO_URL, { useNewUrlParser: true });
+  mongoose.connect(process.env.MONGO_URL);
 }
 
 const mongoDisconnect = async()=>{
