@@ -12,12 +12,14 @@ mongoose.connection.on('error', (err) => {
   console.error(err);
 });
 
-async function mongoConnect() {
-  mongoose.connect(process.env.MONGO_URL);
+const mongoConnect = async ()=>{
+  await mongoose.connect(process.env.MONGO_URL);
+
 }
 
 const mongoDisconnect = async()=>{
-  mongoose.disconnect()
+  setTimeout(async() => {await mongoose.connection.close()}, 10000)
+  ;
 }
 
 

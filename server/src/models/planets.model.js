@@ -4,7 +4,7 @@ const parse = require("csv-parse");
 
 const planets = require("./planets.mongo");
 
-function livePLanet(planet) {
+const livePLanet = (planet)=>{
   return (
     planet["koi_disposition"] === "CONFIRMED" &&
     planet["koi_insol"] > 0.36 &&
@@ -32,17 +32,8 @@ const loadPlanetsData = async () => {
       });
 };
 
-async function getAllPlanets() {
-  return await planets.find(
-    {},
-    {
-      '_id': 0,
-      '__v': 0,
-    }
-  );
-}
 
-async function savePlanet(planet) {
+const savePlanet = async (planet)=>{
   try {
     await planets.updateOne(
       {
@@ -59,6 +50,17 @@ async function savePlanet(planet) {
     console.error(`Could not save planet ${err}`);
   }
 }
+
+const getAllPlanets = async ()=>{
+  return await planets.find(
+    {},
+    {
+      '_id': 0,
+      '__v': 0,
+    }
+  );
+}
+
 
 module.exports = {
   loadPlanetsData,
